@@ -6,6 +6,9 @@
 #include "PickupObject.h"
 #include "craftingCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FItemsDelegate);
+
+
 USTRUCT(BlueprintType)
 struct FPickupItem
 {
@@ -16,6 +19,12 @@ struct FPickupItem
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 		int Number;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+		UTexture2D *ItemImage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+		bool IsRare;
 };
 
 
@@ -152,7 +161,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI)
 	TArray<FPickupItem> CurrentItems;
 
+	UPROPERTY(BlueprintAssignable, Category = UI)
+	FItemsDelegate Callback;
+
 public:
+
 	UFUNCTION(BlueprintCallable, Category = UI)
 		int IncreaseItemNumber(APickupObject *po);
 

@@ -36,9 +36,7 @@ void APickupObject::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 	APawn *playerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 	if (this->IsValidLowLevelFast() && OtherActor != nullptr && OtherActor != this && OtherActor->GetClass() == playerPawn->GetClass())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White, TEXT("KOLIZKA"));
 		int number = Cast<AcraftingCharacter>(playerPawn)->IncreaseItemNumber(this);
-		GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White, FString::FromInt(number));
 		this->Destroy();
 	}
 }

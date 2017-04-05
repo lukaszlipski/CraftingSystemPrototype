@@ -5,7 +5,7 @@
 #include "PickupObject.h"
 #include "PickupCommon.generated.h"
 
-UENUM(BlueprintType)		//"BlueprintType" is essential to include
+UENUM(BlueprintType)
 enum class ECommonType : uint8
 {
 	Alcohol 				UMETA(DisplayName = "Alcohol"),

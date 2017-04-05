@@ -114,6 +114,7 @@ void AcraftingCharacter::BeginPlay()
 		Mesh1P->SetHiddenInGame(false, true);
 	}
 	PlayerInventory->SetVisibility(false);
+	InteractionPointer->Deactivate();
 }
 
 void AcraftingCharacter::Tick(float DeltaSeconds)
@@ -141,11 +142,14 @@ int AcraftingCharacter::IncreaseItemNumber(APickupObject * po)
 	{
 		if (CurrentItems[i].ItemClass == po->GetClass())
 		{
-			return ++CurrentItems[i].Number;
+			++CurrentItems[i].Number;
+			Callback.Broadcast();
+			return CurrentItems[i].Number;
 		}
 	}
 
-	CurrentItems.Add(FPickupItem{ po->GetClass(),1 });
+	CurrentItems.Add(FPickupItem{ po->GetClass(),1,po->Texture,po->IsRare() });
+	Callback.Broadcast();
 	return 1;
 }
 
@@ -157,11 +161,14 @@ int AcraftingCharacter::DecreaseItemNumber(APickupObject * po)
 		{
 			if (CurrentItems[i].Number > 1)
 			{
-				return --CurrentItems[i].Number;
+				--CurrentItems[i].Number;
+				Callback.Broadcast();
+				return CurrentItems[i].Number;
 			}
 			else
 			{
 				CurrentItems.RemoveAt(i);
+				Callback.Broadcast();
 				return 0;
 			}
 		}
