@@ -139,7 +139,7 @@ protected:
 
 	APlayerController *PlayerController;
 
-	// Inventory
+	// -------------- Inventory & pickups ---------------
 	void SetInventory();
 	bool bIsInventoryOpen;
 
@@ -152,7 +152,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI)
 	TArray<FPickupItem> CurrentItems;
 
-	
+public:
+	UFUNCTION(BlueprintCallable, Category = UI)
+		int IncreaseItemNumber(APickupObject *po);
+
+	UFUNCTION(BlueprintCallable, Category = UI)
+		int DecreaseItemNumber(APickupObject *po);
+
+	// ------------------------------------------------
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;

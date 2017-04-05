@@ -1,8 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "crafting.h"
+#include "craftingCharacter.h"
+#include <EngineGlobals.h>
+#include <Runtime/Engine/Classes/Engine/Engine.h>
 #include "PickupObject.h"
-
 
 // Sets default values
 APickupObject::APickupObject()
@@ -14,15 +16,31 @@ APickupObject::APickupObject()
 
 	Shape = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Collision Shape"));
 	Shape->SetupAttachment(RootComponent);
+	Shape->bGenerateOverlapEvents = true;
+	Shape->OnComponentBeginOverlap.AddDynamic(this, &APickupObject::OnOverlapBegin);
+
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Shape);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Mesh->bGenerateOverlapEvents = false;
 }
 
 bool APickupObject::IsRare() const
 {
 	return bIsRare;
+}
+
+void APickupObject::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
+{
+	APawn *playerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	if (this->IsValidLowLevelFast() && OtherActor != nullptr && OtherActor != this && OtherActor->GetClass() == playerPawn->GetClass())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White, TEXT("KOLIZKA"));
+		int number = Cast<AcraftingCharacter>(playerPawn)->IncreaseItemNumber(this);
+		GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White, FString::FromInt(number));
+		this->Destroy();
+	}
 }
 
 // Called when the game starts or when spawned

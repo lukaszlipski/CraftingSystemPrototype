@@ -34,6 +34,7 @@ AcraftingCharacter::AcraftingCharacter()
 	// Player inventory setup
 	PlayerInventory = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerInventory"));
 	PlayerInventory->SetupAttachment(FirstPersonCameraComponent);
+	PlayerInventory->bGenerateOverlapEvents = false;
 
 	InteractionPointer = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("InteractionPointer"));
 	InteractionPointer->SetupAttachment(FirstPersonCameraComponent);
@@ -133,6 +134,40 @@ void AcraftingCharacter::Tick(float DeltaSeconds)
 
 //////////////////////////////////////////////////////////////////////////
 // Input
+
+int AcraftingCharacter::IncreaseItemNumber(APickupObject * po)
+{
+	for (int i = 0; i < CurrentItems.Num(); i++)
+	{
+		if (CurrentItems[i].ItemClass == po->GetClass())
+		{
+			return ++CurrentItems[i].Number;
+		}
+	}
+
+	CurrentItems.Add(FPickupItem{ po->GetClass(),1 });
+	return 1;
+}
+
+int AcraftingCharacter::DecreaseItemNumber(APickupObject * po)
+{
+	for (int i = 0; i < CurrentItems.Num(); i++)
+	{
+		if (CurrentItems[i].ItemClass == po->GetClass())
+		{
+			if (CurrentItems[i].Number > 1)
+			{
+				return --CurrentItems[i].Number;
+			}
+			else
+			{
+				CurrentItems.RemoveAt(i);
+				return 0;
+			}
+		}
+	}
+	return 0;
+}
 
 void AcraftingCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
