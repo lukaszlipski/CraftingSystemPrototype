@@ -3,7 +3,20 @@
 #include "GameFramework/Character.h"
 #include "Components/WidgetComponent.h"
 #include "Components/WidgetInteractionComponent.h"
+#include "PickupObject.h"
 #include "craftingCharacter.generated.h"
+
+USTRUCT(BlueprintType)
+struct FPickupItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+		TSubclassOf<APickupObject> ItemClass;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+		int Number;
+};
 
 
 UCLASS(config=Game)
@@ -135,6 +148,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = UI)
 	class UWidgetInteractionComponent* InteractionPointer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI)
+	TArray<FPickupItem> CurrentItems;
+
 	
 protected:
 	// APawn interface
