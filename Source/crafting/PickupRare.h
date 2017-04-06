@@ -16,5 +16,7 @@ class CRAFTING_API APickupRare : public APickupObject
 public:
 	APickupRare();
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type")
+		bool bCanBeUsed;
 	
 };

@@ -6,6 +6,9 @@
 #include "Animation/AnimInstance.h"
 #include "GameFramework/InputSettings.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
+#include <EngineGlobals.h>
+#include <Runtime/Engine/Classes/Engine/Engine.h>
+#include "Kismet/KismetMathLibrary.h"
 #include "MotionControllerComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
@@ -115,6 +118,8 @@ void AcraftingCharacter::BeginPlay()
 	}
 	PlayerInventory->SetVisibility(false);
 	InteractionPointer->Deactivate();
+
+	UICurrentRotation = UIInitRotation = PlayerInventory->GetRelativeTransform().GetRotation().Rotator();
 }
 
 void AcraftingCharacter::Tick(float DeltaSeconds)
@@ -124,12 +129,30 @@ void AcraftingCharacter::Tick(float DeltaSeconds)
 
 	if (bIsInventoryOpen)
 	{
+		// Rotate interaction pointer
 		FHitResult hit;
 		PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, hit);
 		FVector end = hit.Location;
 		FVector start = FirstPersonCameraComponent->GetComponentToWorld().GetLocation();
 		FQuat newRotation = FRotationMatrix::MakeFromX(end - start).Rotator().Quaternion();
 		InteractionPointer->SetWorldRotation(newRotation);
+
+		// Get mouse delta
+		FVector2D centerViewPort;
+		GetWorld()->GetGameViewport()->GetViewportSize(centerViewPort);
+		centerViewPort /= 2;
+		FVector2D MouseDelta;
+		PlayerController->GetMousePosition(MouseDelta.X, MouseDelta.Y);
+		MouseDelta = (MouseDelta - centerViewPort) / centerViewPort;
+
+		// Rotate player inventory
+		FRotator CameraRotation;
+		CameraRotation.Pitch = UIInitRotation.Pitch + (MouseDelta.Y * 7);
+		CameraRotation.Yaw = UIInitRotation.Yaw + (MouseDelta.X * 5);
+		CameraRotation.Roll = UIInitRotation.Roll;
+		UICurrentRotation = FMath::RInterpTo(UICurrentRotation, CameraRotation, DeltaSeconds, 1.0f);
+		PlayerInventory->SetRelativeRotation(UICurrentRotation);
+	
 	}
 }
 

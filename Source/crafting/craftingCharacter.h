@@ -164,6 +164,11 @@ protected:
 	UPROPERTY(BlueprintAssignable, Category = UI)
 	FItemsDelegate Callback;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI)
+	FRotator UIInitRotation;
+
+	FRotator UICurrentRotation;
+
 public:
 
 	UFUNCTION(BlueprintCallable, Category = UI)
