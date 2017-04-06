@@ -15,13 +15,13 @@ struct FPickupItem
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-		TSubclassOf<APickupObject> ItemClass;
+		FString Class;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 		int Number;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-		UTexture2D *ItemImage;
+		UTexture2D *Texture;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 		bool IsRare;
@@ -170,7 +170,13 @@ public:
 		int IncreaseItemNumber(APickupObject *po);
 
 	UFUNCTION(BlueprintCallable, Category = UI)
+		int IncreaseItemNumberS(FPickupItem po);
+
+	UFUNCTION(BlueprintCallable, Category = UI)
 		int DecreaseItemNumber(APickupObject *po);
+
+	UFUNCTION(BlueprintCallable, Category = UI)
+		int DecreaseItemNumberS(FPickupItem po);
 
 	// ------------------------------------------------
 

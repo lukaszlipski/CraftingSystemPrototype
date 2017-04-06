@@ -140,7 +140,7 @@ int AcraftingCharacter::IncreaseItemNumber(APickupObject * po)
 {
 	for (int i = 0; i < CurrentItems.Num(); i++)
 	{
-		if (CurrentItems[i].ItemClass == po->GetClass())
+		if (CurrentItems[i].Class == po->GetClass()->GetName())
 		{
 			++CurrentItems[i].Number;
 			Callback.Broadcast();
@@ -148,7 +148,24 @@ int AcraftingCharacter::IncreaseItemNumber(APickupObject * po)
 		}
 	}
 
-	CurrentItems.Add(FPickupItem{ po->GetClass(),1,po->Texture,po->IsRare() });
+	CurrentItems.Add(FPickupItem{ po->GetClass()->GetName(),1,po->Texture,po->IsRare() });
+	Callback.Broadcast();
+	return 1;
+}
+
+int AcraftingCharacter::IncreaseItemNumberS(FPickupItem po)
+{
+	for (int i = 0; i < CurrentItems.Num(); i++)
+	{
+		if (CurrentItems[i].Class == po.Class)
+		{
+			++CurrentItems[i].Number;
+			Callback.Broadcast();
+			return CurrentItems[i].Number;
+		}
+	}
+	po.Number = 1;
+	CurrentItems.Add(po);
 	Callback.Broadcast();
 	return 1;
 }
@@ -157,7 +174,30 @@ int AcraftingCharacter::DecreaseItemNumber(APickupObject * po)
 {
 	for (int i = 0; i < CurrentItems.Num(); i++)
 	{
-		if (CurrentItems[i].ItemClass == po->GetClass())
+		if (CurrentItems[i].Class == po->GetClass()->GetName())
+		{
+			if (CurrentItems[i].Number > 1)
+			{
+				--CurrentItems[i].Number;
+				Callback.Broadcast();
+				return CurrentItems[i].Number;
+			}
+			else
+			{
+				CurrentItems.RemoveAt(i);
+				Callback.Broadcast();
+				return 0;
+			}
+		}
+	}
+	return 0;
+}
+
+int AcraftingCharacter::DecreaseItemNumberS(FPickupItem po)
+{
+	for (int i = 0; i < CurrentItems.Num(); i++)
+	{
+		if (CurrentItems[i].Class == po.Class)
 		{
 			if (CurrentItems[i].Number > 1)
 			{
