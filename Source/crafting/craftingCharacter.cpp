@@ -163,7 +163,7 @@ int AcraftingCharacter::IncreaseItemNumber(APickupObject * po)
 {
 	for (int i = 0; i < CurrentItems.Num(); i++)
 	{
-		if (CurrentItems[i].Class == po->GetClass()->GetName())
+		if (CurrentItems[i].Class == po->GetClass())
 		{
 			++CurrentItems[i].Number;
 			Callback.Broadcast();
@@ -171,7 +171,7 @@ int AcraftingCharacter::IncreaseItemNumber(APickupObject * po)
 		}
 	}
 
-	CurrentItems.Add(FPickupItem{ po->GetClass()->GetName(),1,po->Texture,po->IsRare() });
+	CurrentItems.Add(FPickupItem{ po->GetClass(),1,po->IsRare() });
 	Callback.Broadcast();
 	return 1;
 }
@@ -197,7 +197,7 @@ int AcraftingCharacter::DecreaseItemNumber(APickupObject * po)
 {
 	for (int i = 0; i < CurrentItems.Num(); i++)
 	{
-		if (CurrentItems[i].Class == po->GetClass()->GetName())
+		if (CurrentItems[i].Class == po->GetClass())
 		{
 			if (CurrentItems[i].Number > 1)
 			{

@@ -15,13 +15,10 @@ struct FPickupItem
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-		FString Class;
+		TSubclassOf<class APickupObject> Class;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 		int Number;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-		UTexture2D *Texture;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 		bool IsRare;
