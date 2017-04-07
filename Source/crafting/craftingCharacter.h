@@ -27,6 +27,19 @@ struct FPickupItem
 		bool IsRare;
 };
 
+USTRUCT(BlueprintType)
+struct FItemImages
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+		TSubclassOf<class APickupObject> Class;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+		UTexture2D *Texture;
+
+};
+
 
 UCLASS(config=Game)
 class AcraftingCharacter : public ACharacter
