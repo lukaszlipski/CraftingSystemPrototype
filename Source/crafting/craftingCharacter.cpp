@@ -20,6 +20,8 @@ AcraftingCharacter::AcraftingCharacter()
 {
 
 	bIsInventoryOpen = false;
+	bIsUIRotting = false;
+	bIsCraftingTableCurrentUI = true;
 	
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
@@ -38,6 +40,11 @@ AcraftingCharacter::AcraftingCharacter()
 	PlayerInventory = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerInventory"));
 	PlayerInventory->SetupAttachment(FirstPersonCameraComponent);
 	PlayerInventory->bGenerateOverlapEvents = false;
+
+	// Player recipe list
+	RecipeList = CreateDefaultSubobject<UWidgetComponent>(TEXT("RecipeList"));
+	RecipeList->SetupAttachment(FirstPersonCameraComponent);
+	RecipeList->bGenerateOverlapEvents = false;
 
 	InteractionPointer = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("InteractionPointer"));
 	InteractionPointer->SetupAttachment(FirstPersonCameraComponent);
@@ -119,6 +126,16 @@ void AcraftingCharacter::BeginPlay()
 	PlayerInventory->SetVisibility(false);
 	InteractionPointer->Deactivate();
 
+	// rotate recipe table 90 degrees
+	FVector fpsCamPos = FirstPersonCameraComponent->GetComponentToWorld().GetLocation();
+	FVector recipePos = RecipeList->GetComponentToWorld().GetLocation();
+	FVector dirFR = recipePos - fpsCamPos;
+	float distanceFR = FVector::Dist(recipePos, fpsCamPos);
+	dirFR.Normalize();
+	FVector newPosFR = UKismetMathLibrary::RotateAngleAxis(dirFR, 90, GetCapsuleComponent()->GetUpVector());
+	RecipeList->SetWorldLocation(FirstPersonCameraComponent->GetComponentToWorld().GetLocation() + newPosFR * distanceFR);
+
+	// Get current rotation of crafting table
 	UICurrentRotation = UIInitRotation = PlayerInventory->GetRelativeTransform().GetRotation().Rotator();
 }
 
@@ -151,9 +168,56 @@ void AcraftingCharacter::Tick(float DeltaSeconds)
 		CameraRotation.Yaw = UIInitRotation.Yaw + (MouseDelta.X * 5);
 		CameraRotation.Roll = UIInitRotation.Roll;
 		UICurrentRotation = FMath::RInterpTo(UICurrentRotation, CameraRotation, DeltaSeconds, 1.0f);
-		PlayerInventory->SetRelativeRotation(UICurrentRotation);
+		if (bIsCraftingTableCurrentUI)
+		{
+			PlayerInventory->SetRelativeRotation(UICurrentRotation);
+		}
+		else
+		{
+			RecipeList->SetRelativeRotation(UICurrentRotation);
+		}
 	
 	}
+
+	// Rotate UI
+	if (bIsUIRotting)
+	{
+		FVector fpsCamPos = FirstPersonCameraComponent->GetComponentToWorld().GetLocation();
+		FVector recipePos = RecipeList->GetComponentToWorld().GetLocation();
+		FVector craftPos = PlayerInventory->GetComponentToWorld().GetLocation();
+		FVector dirFR = recipePos - fpsCamPos;
+		FVector dirFC = craftPos - fpsCamPos;
+		float distanceFR = FVector::Dist(recipePos, fpsCamPos);
+		float distanceFC = FVector::Dist(craftPos, fpsCamPos);
+		dirFR.Normalize();
+		dirFC.Normalize();
+
+		// set location
+		FVector newPosFR = UKismetMathLibrary::RotateAngleAxis(dirFR, DeltaSeconds * UISpeed, FirstPersonCameraComponent->GetUpVector());
+		RecipeList->SetWorldLocation(fpsCamPos + newPosFR * distanceFR);
+		FVector newPosFC = UKismetMathLibrary::RotateAngleAxis(dirFC, DeltaSeconds * UISpeed, FirstPersonCameraComponent->GetUpVector());
+		PlayerInventory->SetWorldLocation(fpsCamPos + newPosFC * distanceFC);
+		currentAngle += DeltaSeconds * UISpeed;
+
+
+
+		if (bIsCraftingTableCurrentUI)
+		{
+			if (currentAngle >= 0)
+			{
+				bIsUIRotting = false;
+			}
+		}
+		else
+		{
+			if (currentAngle <= -90)
+			{
+				bIsUIRotting = false;
+			}
+		}
+
+	} 
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -237,6 +301,37 @@ int AcraftingCharacter::DecreaseItemNumberS(FPickupItem po)
 		}
 	}
 	return 0;
+}
+
+void AcraftingCharacter::SwitchToRecipeList()
+{
+	if (currentAngle <= -90)
+	{
+		bIsUIRotting = false;
+		return;
+	}
+	bIsUIRotting = true;
+	if (bIsCraftingTableCurrentUI)
+	{
+		UISpeed = -UISpeed;
+	}
+	bIsCraftingTableCurrentUI = false;
+}
+
+void AcraftingCharacter::SwitchToCraftingTable()
+{
+	
+	if (currentAngle >= 0)
+	{
+		bIsUIRotting = false;
+		return;
+	}
+	if (!bIsCraftingTableCurrentUI)
+	{
+		UISpeed = -UISpeed;
+	}
+	bIsUIRotting = true;
+	bIsCraftingTableCurrentUI = true;
 }
 
 void AcraftingCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -368,13 +463,15 @@ void AcraftingCharacter::SetInventory()
 
 	PlayerController->bShowMouseCursor = bIsInventoryOpen;
 
-
 	if (bIsInventoryOpen)
 	{
+		SwitchToCraftingTable();
+
 		FVector2D viewportSize;
 		GetWorld()->GetGameViewport()->GetViewportSize(viewportSize);
 		PlayerController->SetMouseLocation(viewportSize.X/2.0f,viewportSize.Y/2.0f);
 		
+		RecipeList->SetVisibility(true);
 		PlayerInventory->SetVisibility(true);
 		FInputModeGameAndUI mode;
 		mode.SetLockMouseToViewport(true);
@@ -385,6 +482,7 @@ void AcraftingCharacter::SetInventory()
 	}
 	else
 	{
+		RecipeList->SetVisibility(false);
 		PlayerInventory->SetVisibility(false);
 		FInputModeGameOnly mode;
 		PlayerController->SetInputMode(mode);

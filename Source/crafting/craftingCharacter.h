@@ -161,9 +161,21 @@ protected:
 	// -------------- Inventory & pickups ---------------
 	void SetInventory();
 	bool bIsInventoryOpen;
+	bool bIsUIRotting;
+	bool bIsCraftingTableCurrentUI;
+	float currentAngle;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = UI)
 	class UWidgetComponent* PlayerInventory;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = UI)
+	class UWidgetComponent* RecipeList;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = UI)
+	float UIRadius;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = UI)
+	float UISpeed;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = UI)
 	class UWidgetInteractionComponent* InteractionPointer;
@@ -192,6 +204,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = UI)
 		int DecreaseItemNumberS(FPickupItem po);
+
+	UFUNCTION(BlueprintCallable, Category = UI)
+		void SwitchToRecipeList();
+
+	UFUNCTION(BlueprintCallable, Category = UI)
+		void SwitchToCraftingTable();
 
 	// ------------------------------------------------
 
