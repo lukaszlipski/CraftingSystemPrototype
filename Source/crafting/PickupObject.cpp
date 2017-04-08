@@ -13,6 +13,7 @@ APickupObject::APickupObject()
 	PrimaryActorTick.bCanEverTick = true;
 
 	bIsRare = false;
+	TimeCounter = 0;
 
 	Shape = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Collision Shape"));
 	Shape->SetupAttachment(RootComponent);
@@ -52,6 +53,13 @@ void APickupObject::BeginPlay()
 void APickupObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	FRotator deltaRot(0, DeltaTime * 45, 0);
+	Mesh->AddWorldRotation(deltaRot);
+
+	TimeCounter += DeltaTime;
+	FVector deltaPos(0, 0, FMath::Sin(TimeCounter)/4.0f);
+	Mesh->AddWorldOffset(deltaPos);
 
 }
 
