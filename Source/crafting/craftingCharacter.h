@@ -211,6 +211,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = UI)
 		void SwitchToCraftingTable();
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = UI)
+		bool GetIsInventoryOpen();
 	// ------------------------------------------------
 
 protected:

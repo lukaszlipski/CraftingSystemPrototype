@@ -334,6 +334,11 @@ void AcraftingCharacter::SwitchToCraftingTable()
 	bIsCraftingTableCurrentUI = true;
 }
 
+bool AcraftingCharacter::GetIsInventoryOpen()
+{
+	return bIsInventoryOpen;
+}
+
 void AcraftingCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// set up gameplay key bindings
