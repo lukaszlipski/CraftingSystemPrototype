@@ -23,6 +23,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
 		class UCapsuleComponent* Shape;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Desc")
+		FString ObjName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Desc")
+		FString Description;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Type")
 		bool bIsRare;
 

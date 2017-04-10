@@ -22,6 +22,12 @@ struct FPickupItem
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 		bool IsRare;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+		FString SName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+		FString Description;
 };
 
 USTRUCT(BlueprintType)

@@ -235,7 +235,7 @@ int AcraftingCharacter::IncreaseItemNumber(APickupObject * po)
 		}
 	}
 
-	CurrentItems.Add(FPickupItem{ po->GetClass(),1,po->IsRare() });
+	CurrentItems.Add(FPickupItem{ po->GetClass(),1,po->IsRare(), po->ObjName,po->Description});
 	Callback.Broadcast();
 	return 1;
 }
