@@ -199,8 +199,6 @@ void AcraftingCharacter::Tick(float DeltaSeconds)
 		PlayerInventory->SetWorldLocation(fpsCamPos + newPosFC * distanceFC);
 		currentAngle += DeltaSeconds * UISpeed;
 
-
-
 		if (bIsCraftingTableCurrentUI)
 		{
 			if (currentAngle >= 0)
